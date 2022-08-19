@@ -1,20 +1,20 @@
 node {
-   def gitcommit
-   stage('Verificación SCM') {
-     checkout scm
-     sh "git rev-parse --short HEAD > .git/commit-id"                        
-     gitcommit = readFile('.git/commit-id').trim()
-   }
-   stage('test') {
-     nodejs(nodeJSInstallationName: 'nodejs') {
-       sh 'npm install --only=dev'
-       sh 'npm test'
-     }
-   }
-   stage('Docker Build & Push') {
-     docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
-      def nuestraapp = docker.build("macloujulian/nodejsapp:${gitcommit}", ".")
+  def gitcommit //Definición de variable para ver el id del commit
+  stage('Verificación SCM') {
+    checkout scm //Clona el repo en jenkins
+    sh "git rev-parse --short HEAD > .git/commit-id"//Ejecución en shell para almacenar el commit id en el archivo temporal .git/commit-id                        
+    gitcommit = readFile('.git/commit-id').trim() //Almacenamos el contenido el archivo temporal .git/commit-id en la variable gitcommit
+  }
+  stage('test') {
+    nodejs(nodeJSInstallationName: 'nodejs') { //Indicación de la instalación de NodeJs en jenkins
+      sh 'npm install --only=dev'
+      sh 'npm test'
+    }
+  }
+  stage('Docker Build & Push') {
+    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') { //Loguearse a Docker con el registro de credenciales 'docker-hub' contenido en Jenkins
+      def nuestraapp = docker.build("macloujulian/nodejsapp:${gitcommit}", ".") //Definción de la variable que construye la app con el el etiquetado del commit id
       nuestraapp.push()
-     }
-   }
+    }
+  }
 }
