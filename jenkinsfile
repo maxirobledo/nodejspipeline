@@ -15,26 +15,14 @@ node {
     }
   }
   stage('Docker login'){
-    sh 'echo $DOCKERHUB_CREDENTIALS_PSW'
-    sh 'docker login -u DOCKERHUB_CREDENTIALS_USR --password-stdin'           
+    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u DOCKERHUB_CREDENTIALS_USR --password-stdin'           
   }
-  stage('Push image'){
-    steps{
-      script{
-        docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
-        def app = docker.build("maxirobledo/nodejsapp:${gitcommit}", ".") //Definción de la variable que construye la app con el el etiquetado del commit id
-        app.push()
-        //dockerImage.push("latest")
-        }
-      } 
-    }            
-  } 
-  // stage('Docker Build & Push') {
-  //   docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') { //Loguearse a Docker con el registro de credenciales 'docker-hub' contenido en Jenkins
-  //     def nuestraapp = docker.build("maxirobledo/nodejsapp:${gitcommit}", ".") //Definción de la variable que construye la app con el el etiquetado del commit id
-  //     nuestraapp.push()
-  //   }
-  // }
+  stage('Docker Build & Push') {
+    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') { //Loguearse a Docker con el registro de credenciales 'docker-hub' contenido en Jenkins
+      def nuestraapp = docker.build("maxirobledo/nodejsapp:${gitcommit}", ".") //Definción de la variable que construye la app con el el etiquetado del commit id
+      nuestraapp.push()
+    }
+  }
   post{
     always{
       sh 'docker logout'
