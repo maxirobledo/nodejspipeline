@@ -12,8 +12,8 @@ node {
     }
   }
   stage('Docker Build & Push') {
-    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') { //Loguearse a Docker con el registro de credenciales 'docker-hub' contenido en Jenkins
-      def nuestraapp = docker.build("macloujulian/nodejsapp:${gitcommit}", ".") //Definción de la variable que construye la app con el el etiquetado del commit id
+    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') { //Loguearse a Docker con el registro de credenciales 'docker-hub' contenido en Jenkins
+      def nuestraapp = docker.build("maxirobledo/nodejsapp:${gitcommit}", ".") //Definción de la variable que construye la app con el el etiquetado del commit id
       nuestraapp.push()
     }
   }
