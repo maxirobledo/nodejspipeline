@@ -1,5 +1,8 @@
 node {
   def gitcommit //Definición de variable para ver el id del commit
+  environment{
+      DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+  }
   stage('Verificación SCM') {
     checkout scm //Clona el repo en jenkins
     sh "git rev-parse --short HEAD > .git/commit-id"//Ejecución en shell para almacenar el commit id en el archivo temporal .git/commit-id                        
@@ -9,6 +12,11 @@ node {
     nodejs(nodeJSInstallationName: 'nodejs') { //Indicación de la instalación de NodeJs en jenkins
       sh 'npm install --only=dev'
       sh 'npm test'
+    }
+  }
+  stage('Docker login'){
+    steps{
+      sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u DOCKERHUB_CREDENTIALS_USR --password-stdin'           
     }
   }
   stage('Docker Build & Push') {
