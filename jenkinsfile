@@ -25,4 +25,9 @@ node {
       nuestraapp.push()
     }
   }
+  post{
+    always{
+      sh 'docker logout'
+    }
+  }
 }
